@@ -31,9 +31,9 @@ export default function StudentList() {
     setEditId(s.student_id)
     setForm({
       name: s.name,
-      birth_year: s.birth_year,
+      birth_year: String(s.birth_year),
       major: s.major,
-      gpa: s.gpa,
+      gpa: String(s.gpa),
     })
   }
 

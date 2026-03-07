@@ -3,9 +3,10 @@
 - **Backend:** FastAPI + SQLite
 - **Frontend:** React (Vite)
 
-## Dữ liệu sinh viên
+## Dữ liệu (Phần 2)
 
-- `student_id`, `name`, `birth_year`, `major`, `gpa`
+- **Lớp (Class):** `class_id`, `class_name`, `advisor`. Dữ liệu mẫu: C01, Khoa học máy tính 1, Nguyen Van A.
+- **Sinh viên:** `student_id`, `name`, `birth_year`, `major`, `gpa`, `class_id` (mỗi sinh viên thuộc một lớp).
 
 ## Chạy ứng dụng
 
@@ -49,15 +50,18 @@ npm run dev
 
 Mở trình duyệt: http://localhost:3000
 
-- **Trang 1 – Danh sách:** Bảng cột ID, Name, Major, GPA, Action (Edit, Delete).
-- **Trang 2 – Thêm:** Form 5 trường + nút "Add Student".
+- **Trang 1 – Danh sách:** Bảng cột ID, Name, Major, GPA, Tên lớp, Action (Edit, Delete).
+- **Trang 2 – Thêm:** Form có ô chọn Lớp học (Dropdown) + các trường sinh viên + nút "Add Student".
+
+*Nâng cấp từ Phần 1 lên Phần 2:* Xóa file `backend/students.db` (nếu có) để tạo lại bảng có cột `class_id` và bảng `classes`.
 
 ## API Backend (CRUD)
 
 | Method | Endpoint | Mô tả |
 |--------|----------|--------|
-| GET | `/api/students` | Lấy danh sách sinh viên |
+| GET | `/api/classes` | Lấy danh sách lớp học |
+| GET | `/api/students` | Lấy danh sách sinh viên (kèm tên lớp) |
 | GET | `/api/students/{id}` | Lấy một sinh viên |
-| POST | `/api/students` | Tạo sinh viên mới |
+| POST | `/api/students` | Tạo sinh viên mới (cần `class_id`) |
 | PUT | `/api/students/{id}` | Cập nhật sinh viên |
 | DELETE | `/api/students/{id}` | Xóa sinh viên |

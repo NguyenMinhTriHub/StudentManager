@@ -38,7 +38,12 @@ export default function AddStudent() {
       <form onSubmit={handleSubmit} style={styles.form}>
         <label style={styles.label}>
           Student ID
-          <input type="text" value="(Tự động sau khi thêm)" disabled style={styles.input} />
+          <input
+            type="text"
+            value="(Tự động sau khi thêm)"
+            disabled
+            style={styles.input}
+          />
         </label>
         <label style={styles.label}>
           Name *
