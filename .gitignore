@@ -1,0 +1,15 @@
+# Loại bỏ file database khỏi Git để tránh lỗi 'File in use'
+backend/students.db
+
+# Loại bỏ các file tạm của Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+
+# Loại bỏ các thư mục rác của Frontend
+node_modules/
+dist/
+.env
