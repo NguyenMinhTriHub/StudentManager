@@ -5,7 +5,7 @@ _backend_dir = Path(__file__).resolve().parent
 if str(_backend_dir) not in sys.path:
     sys.path.insert(0, str(_backend_dir))
 
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
@@ -28,20 +28,30 @@ app.add_middleware(
 
 @app.get("/students", response_model=list[StudentResponse])
 @app.get("/api/students", response_model=list[StudentResponse])
-def get_students(db: Session = Depends(get_db)):
-    return db.query(Student).all()
+def get_students(
+    db: Session = Depends(get_db),
+    search: str | None = Query(None, description="Tìm theo tên sinh viên"),
+):
+    """GET /students - Lấy danh sách sinh viên"""
+    q = db.query(Student)
+    if search and search.strip():
+        q = q.filter(Student.name.ilike(f"%{search.strip()}%"))
+    return q.all()
 
 
 @app.get("/api/students/{student_id}", response_model=StudentResponse)
 def get_student(student_id: int, db: Session = Depends(get_db)):
+    """GET /students/{id} - Lấy chi tiết một sinh viên"""
     student = db.query(Student).filter(Student.student_id == student_id).first()
     if not student:
         raise HTTPException(status_code=404, detail="Student not found")
     return student
 
 
+@app.post("/students", response_model=StudentResponse)
 @app.post("/api/students", response_model=StudentResponse)
 def create_student(student: StudentCreate, db: Session = Depends(get_db)):
+    """POST /students - Thêm sinh viên mới"""
     db_student = Student(**student.model_dump())
     db.add(db_student)
     db.commit()
@@ -49,8 +59,12 @@ def create_student(student: StudentCreate, db: Session = Depends(get_db)):
     return db_student
 
 
+@app.put("/students/{student_id}", response_model=StudentResponse)
 @app.put("/api/students/{student_id}", response_model=StudentResponse)
-def update_student(student_id: int, student: StudentUpdate, db: Session = Depends(get_db)):
+def update_student(
+    student_id: int, student: StudentUpdate, db: Session = Depends(get_db)
+):
+    """PUT /students/{id} - Cập nhật sinh viên"""
     db_student = db.query(Student).filter(Student.student_id == student_id).first()
     if not db_student:
         raise HTTPException(status_code=404, detail="Student not found")
@@ -61,8 +75,10 @@ def update_student(student_id: int, student: StudentUpdate, db: Session = Depend
     return db_student
 
 
+@app.delete("/students/{student_id}")
 @app.delete("/api/students/{student_id}")
 def delete_student(student_id: int, db: Session = Depends(get_db)):
+    """DELETE /students/{id} - Xóa sinh viên"""
     db_student = db.query(Student).filter(Student.student_id == student_id).first()
     if not db_student:
         raise HTTPException(status_code=404, detail="Student not found")

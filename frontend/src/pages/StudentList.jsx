@@ -10,7 +10,7 @@ export default function StudentList() {
   const [editId, setEditId] = useState(null)
   const [form, setForm] = useState(emptyForm)
 
-  const load = () => {
+  const loadStudents = () => {
     setLoading(true)
     getStudents()
       .then((res) => setStudents(res.data))
@@ -18,12 +18,16 @@ export default function StudentList() {
       .finally(() => setLoading(false))
   }
 
-  useEffect(() => load(), [])
+  useEffect(() => {
+    loadStudents()
+  }, [])
 
   const handleDelete = (id) => {
     if (!window.confirm('Bạn có chắc muốn xóa sinh viên này?')) return
     deleteStudent(id)
-      .then(() => load())
+      .then(() => {
+        setStudents((prev) => prev.filter((s) => s.student_id !== id))
+      })
       .catch((e) => setError(e.message))
   }
 
@@ -51,67 +55,76 @@ export default function StudentList() {
       gpa: Number(form.gpa),
     }
     updateStudent(editId, payload)
-      .then(() => {
+      .then((res) => {
+        setStudents((prev) =>
+          prev.map((s) => (s.student_id === editId ? res.data : s))
+        )
         closeEdit()
-        load()
       })
       .catch((e) => setError(e.message))
   }
 
-  if (loading) return <p>Đang tải...</p>
   if (error) return <p style={{ color: 'red' }}>Lỗi: {error}</p>
 
   return (
     <div style={styles.wrapper}>
       <h1 style={styles.title}>Danh sách sinh viên</h1>
-      <table style={styles.table}>
-        <thead>
-          <tr>
-            <th style={styles.th}>ID</th>
-            <th style={styles.th}>Name</th>
-            <th style={styles.th}>Major</th>
-            <th style={styles.th}>GPA</th>
-            <th style={styles.th}>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {students.map((s) => (
-            <tr key={s.student_id}>
-              <td style={styles.td}>{s.student_id}</td>
-              <td style={styles.td}>{s.name}</td>
-              <td style={styles.td}>{s.major}</td>
-              <td style={styles.td}>{s.gpa}</td>
-              <td style={styles.td}>
-                <button
-                  type="button"
-                  style={{ ...styles.btn, ...styles.btnEdit }}
-                  onClick={() => openEdit(s)}
-                >
-                  Edit
-                </button>
-                <button
-                  type="button"
-                  style={{ ...styles.btn, ...styles.btnDelete }}
-                  onClick={() => handleDelete(s.student_id)}
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {students.length === 0 && (
-        <p style={styles.empty}>Chưa có sinh viên nào.</p>
+
+      {loading ? (
+        <p>Đang tải...</p>
+      ) : (
+        <>
+          <table style={styles.table}>
+            <thead>
+              <tr>
+                <th style={styles.th}>ID</th>
+                <th style={styles.th}>Name</th>
+                <th style={styles.th}>Major</th>
+                <th style={styles.th}>GPA</th>
+                <th style={styles.th}>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {students.map((s) => (
+                <tr key={s.student_id}>
+                  <td style={styles.td}>{s.student_id}</td>
+                  <td style={styles.td}>{s.name}</td>
+                  <td style={styles.td}>{s.major}</td>
+                  <td style={styles.td}>{s.gpa}</td>
+                  <td style={styles.td}>
+                    <button
+                      type="button"
+                      style={{ ...styles.btn, ...styles.btnEdit }}
+                      onClick={() => openEdit(s)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      style={{ ...styles.btn, ...styles.btnDelete }}
+                      onClick={() => handleDelete(s.student_id)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {students.length === 0 && (
+            <p style={styles.empty}>Không có sinh viên nào.</p>
+          )}
+        </>
       )}
 
+      {/* Modal sửa sinh viên */}
       {editId && (
         <div style={styles.modalOverlay} onClick={closeEdit}>
           <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
             <h2>Sửa sinh viên</h2>
             <form onSubmit={handleEditSubmit} style={styles.form}>
               <label style={styles.label}>
-                Name
+                Name *
                 <input
                   value={form.name}
                   onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
@@ -120,7 +133,7 @@ export default function StudentList() {
                 />
               </label>
               <label style={styles.label}>
-                Birth year
+                Birth year *
                 <input
                   type="number"
                   value={form.birth_year}
@@ -130,7 +143,7 @@ export default function StudentList() {
                 />
               </label>
               <label style={styles.label}>
-                Major
+                Major *
                 <input
                   value={form.major}
                   onChange={(e) => setForm((f) => ({ ...f, major: e.target.value }))}
@@ -139,7 +152,7 @@ export default function StudentList() {
                 />
               </label>
               <label style={styles.label}>
-                GPA
+                GPA *
                 <input
                   type="number"
                   step="0.01"

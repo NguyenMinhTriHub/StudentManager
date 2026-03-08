@@ -3,6 +3,7 @@ from database import Base
 
 
 class Student(Base):
+    """Bảng Student - Phần 1 MVP: student_id, name, birth_year, major, gpa"""
     __tablename__ = "students"
 
     student_id = Column(Integer, primary_key=True, index=True, autoincrement=True)

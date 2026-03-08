@@ -28,7 +28,7 @@ export default function AddStudent() {
     }
     createStudent(payload)
       .then(() => navigate('/'))
-      .catch((e) => setError(e.message))
+      .catch((e) => setError(e.response?.data?.detail || e.message))
   }
 
   return (
