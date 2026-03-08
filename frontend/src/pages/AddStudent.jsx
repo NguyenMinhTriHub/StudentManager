@@ -1,26 +1,16 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { createStudent, getClasses } from '../services/api'
+import { createStudent } from '../services/api'
 
 export default function AddStudent() {
   const navigate = useNavigate()
-  const [classes, setClasses] = useState([])
   const [form, setForm] = useState({
     name: '',
     birth_year: '',
     major: '',
     gpa: '',
-    class_id: '',
   })
   const [error, setError] = useState(null)
-  const [loadingClasses, setLoadingClasses] = useState(true)
-
-  useEffect(() => {
-    getClasses()
-      .then((r) => setClasses(r.data))
-      .catch(() => setError('Không tải được danh sách lớp'))
-      .finally(() => setLoadingClasses(false))
-  }, [])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -30,16 +20,11 @@ export default function AddStudent() {
   const handleSubmit = (e) => {
     e.preventDefault()
     setError(null)
-    if (!form.class_id) {
-      setError('Vui lòng chọn lớp học.')
-      return
-    }
     const payload = {
       name: form.name,
       birth_year: Number(form.birth_year),
       major: form.major,
       gpa: Number(form.gpa),
-      class_id: form.class_id,
     }
     createStudent(payload)
       .then(() => navigate('/'))
@@ -50,7 +35,6 @@ export default function AddStudent() {
     <div style={styles.wrapper}>
       <h1 style={styles.title}>Thêm sinh viên</h1>
       {error && <p style={styles.error}>Lỗi: {error}</p>}
-      {loadingClasses && <p style={styles.muted}>Đang tải danh sách lớp...</p>}
       <form onSubmit={handleSubmit} style={styles.form}>
         <label style={styles.label}>
           Student ID
@@ -60,24 +44,6 @@ export default function AddStudent() {
             disabled
             style={styles.input}
           />
-        </label>
-        <label style={styles.label}>
-          Lớp học *
-          <select
-            name="class_id"
-            value={form.class_id}
-            onChange={handleChange}
-            required
-            style={styles.input}
-            disabled={loadingClasses}
-          >
-            <option value="">— Chọn lớp —</option>
-            {classes.map((c) => (
-              <option key={c.class_id} value={c.class_id}>
-                {c.class_name}
-              </option>
-            ))}
-          </select>
         </label>
         <label style={styles.label}>
           Name *
@@ -126,7 +92,7 @@ export default function AddStudent() {
             placeholder="Điểm GPA"
           />
         </label>
-        <button type="submit" style={styles.btnAdd} disabled={loadingClasses}>
+        <button type="submit" style={styles.btnAdd}>
           Add Student
         </button>
       </form>
@@ -138,7 +104,6 @@ const styles = {
   wrapper: { background: '#fff', borderRadius: 8, padding: 24, boxShadow: '0 1px 3px rgba(0,0,0,0.1)', maxWidth: 480 },
   title: { marginTop: 0, marginBottom: 20 },
   error: { color: '#d32f2f', marginBottom: 12 },
-  muted: { color: '#666', marginBottom: 8 },
   form: { display: 'flex', flexDirection: 'column', gap: 16 },
   label: { display: 'flex', flexDirection: 'column', gap: 6, fontSize: 14 },
   input: { padding: '10px 12px', borderRadius: 4, border: '1px solid #ccc', fontSize: 14 },
