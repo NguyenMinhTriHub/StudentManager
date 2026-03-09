@@ -1,3 +1,10 @@
+# Thông tin cá nhân
+
+- Họ và tên:Nguyễn Minh Trí
+- MSSV:23710141
+- Lớp:DHKHDL19B
+- Môn:Phát triển ứng dụng
+
 # Ứng dụng Web Quản lý Sinh viên (MVP)
 
 - **Backend:** FastAPI + SQLite
