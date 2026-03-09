@@ -10,7 +10,7 @@
 - **Backend:** FastAPI + SQLite
 - **Frontend:** React (Vite)
 
-## Dữ liệu (Phần 1 và Phần 2)
+## Dữ liệu 
 
 - **Lớp (Class):** `class_id`, `class_name`, `advisor`. Dữ liệu mẫu: C01, Khoa học máy tính 1, Nguyen Van A.
 - **Sinh viên:** `student_id`, `name`, `birth_year`, `major`, `gpa`, `class_id` (mỗi sinh viên thuộc một lớp).
